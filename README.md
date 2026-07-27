@@ -4,12 +4,11 @@ A modern, elegant, and interactive Lucky Draw application built with Next.js, Ta
 
 This application was designed specifically for office anniversaries or company events. It features a stunning drawing interface and a comprehensive admin dashboard to manage participants, prizes, and winner history.
 
-## ⚠️ Important Note on Data Storage
+## ⚠️ Architecture Update
 
-This application operates **entirely in your browser** and uses **IndexedDB** for storage. There is no external backend or database. 
-- All data (Participants, Prizes, and Winners) is saved locally to the browser where you open the app.
-- If you deploy the app to the internet (e.g., via Vercel) and open it on your laptop, the data stays on your laptop. If someone else opens the link on their phone, they will see an empty database.
-- This architecture is perfect for event operators who manage the draw from a single laptop connected to a projector, guaranteeing fast performance and zero server costs!
+This application has been upgraded to use a real centralized Database (**PostgreSQL**) via **Prisma ORM**. 
+- Your data is safely stored in the cloud (e.g., Vercel Postgres / Neon) and synced across all devices.
+- It leverages Next.js Server Actions for seamless client-to-database communication.
 
 ## Features
 
@@ -38,8 +37,8 @@ Follow these steps to initialize and run the project on your local machine.
 
 ### Prerequisites (Infrastructure)
 
-1. **Node.js**: Ensure you have Node.js installed (version 18.17 or higher recommended). You can download it from [nodejs.org](https://nodejs.org/).
-2. **Database**: **None required!** This application uses your browser's built-in **IndexedDB**. There is no need to install PostgreSQL, MySQL, or MongoDB.
+1. **Node.js**: Ensure you have Node.js installed (version 20.19 or higher required for Prisma 7).
+2. **Database**: You need a PostgreSQL database (e.g., Vercel Postgres, Neon, or Supabase).
 3. **Git**: (Optional but recommended) To clone the repository.
 
 ### Initial Setup Steps
@@ -55,10 +54,26 @@ Follow these steps to initialize and run the project on your local machine.
    npm install
    ```
 
-3. **Start the development server**:
+3. **Configure Database**:
+   - Create a `.env` file in the root folder.
+   - Add your connection string: `DATABASE_URL="postgresql://user:password@host/dbname"`
+   - Push the schema to your database:
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
+
+4. **Start the development server**:
    ```bash
    npm run dev
    ```
+
+5. **View your Database (Prisma Studio)**:
+   You can visually inspect and manage your raw database records by running:
+   ```bash
+   npx prisma studio
+   ```
+   This will open a GUI in your browser at [http://localhost:5555](http://localhost:5555).
 
 4. **Initialize Data**:
    - Open your browser and go to [http://localhost:3000/admin](http://localhost:3000/admin)
