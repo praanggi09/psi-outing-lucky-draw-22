@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,28 +11,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <h2 className="text-xl font-bold tracking-tight text-primary">Admin Panel</h2>
         </div>
         <nav className="flex-1 p-4 flex flex-col gap-2">
-          <Button variant="ghost" className="justify-start text-muted-foreground hover:text-foreground text-lg h-12" asChild>
-            <Link href="/admin/participants">
-              Participants
-            </Link>
-          </Button>
-          <Button variant="ghost" className="justify-start text-muted-foreground hover:text-foreground text-lg h-12" asChild>
-            <Link href="/admin/prizes">
-              Prizes
-            </Link>
-          </Button>
-          <Button variant="ghost" className="justify-start text-muted-foreground hover:text-foreground text-lg h-12" asChild>
-            <Link href="/admin/winners">
-              Winners
-            </Link>
-          </Button>
+          <Link href="/admin/participants" className={buttonVariants({ variant: 'ghost', className: 'justify-start text-muted-foreground hover:text-foreground text-lg h-12' })}>
+            Participants
+          </Link>
+          <Link href="/admin/prizes" className={buttonVariants({ variant: 'ghost', className: 'justify-start text-muted-foreground hover:text-foreground text-lg h-12' })}>
+            Prizes
+          </Link>
+          <Link href="/admin/winners" className={buttonVariants({ variant: 'ghost', className: 'justify-start text-muted-foreground hover:text-foreground text-lg h-12' })}>
+            Winners
+          </Link>
         </nav>
         <div className="p-4 border-t border-border">
-          <Button variant="outline" className="w-full justify-start text-primary text-lg h-12" asChild>
-            <Link href="/">
-              Drawing Page
-            </Link>
-          </Button>
+          <Link href="/" className={buttonVariants({ variant: 'outline', className: 'w-full justify-start text-primary text-lg h-12' })}>
+            Drawing Page
+          </Link>
         </div>
       </aside>
 

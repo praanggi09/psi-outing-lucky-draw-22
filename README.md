@@ -32,18 +32,52 @@ Since this is a Next.js application, the easiest and best platform to deploy is 
 
 You can now use that URL on the main laptop you will be using for the event!
 
-## Running Locally
+## Initialization & Setup (Running Locally)
 
-If you just want to run it locally on your machine without deploying:
+Follow these steps to initialize and run the project on your local machine.
 
-First, install dependencies:
-```bash
-npm install
-```
+### Prerequisites (Infrastructure)
 
-Then, run the development server:
-```bash
-npm run dev
-```
+1. **Node.js**: Ensure you have Node.js installed (version 18.17 or higher recommended). You can download it from [nodejs.org](https://nodejs.org/).
+2. **Database**: **None required!** This application uses your browser's built-in **IndexedDB**. There is no need to install PostgreSQL, MySQL, or MongoDB.
+3. **Git**: (Optional but recommended) To clone the repository.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. Go to `http://localhost:3000/admin` to set up your prizes and participants!
+### Initial Setup Steps
+
+1. **Clone the repository** (or download the source code):
+   ```bash
+   git clone https://github.com/your-username/psi-outing-lucky-draw-22.git
+   cd psi-outing-lucky-draw-22
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Initialize Data**:
+   - Open your browser and go to [http://localhost:3000/admin](http://localhost:3000/admin)
+   - Go to the **Participants** tab and upload your CSV file containing the list of names.
+   - Go to the **Prizes** tab and add the prizes (e.g., Doorprize or Grand Prize) and their quantities.
+   - Now, you can open [http://localhost:3000](http://localhost:3000) to start drawing!
+
+## Running in Production (Locally or Custom Server)
+
+If you are not deploying to Vercel and want to run the optimized production build on your own machine or server, use the following commands:
+
+1. **Build the application**:
+   ```bash
+   npm run build
+   ```
+
+2. **Start the production server**:
+   ```bash
+   npm run start
+   ```
+
+The application will be running at [http://localhost:3000](http://localhost:3000) in production mode.
