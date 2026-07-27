@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Participant {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  createdAt DateTime @default(now())
+}
+
+model Prize {
+  id        String   @id @default(uuid())
+  name      String
+  quantity  Int
+  category  String
+  createdAt DateTime @default(now())
+}
+
+model Winner {
+  id              String   @id @default(uuid())
+  participantId   String
+  participantName String
+  prizeId         String
+  prizeName       String
+  category        String
+  status          String
+  timestamp       DateTime @default(now())
+}
