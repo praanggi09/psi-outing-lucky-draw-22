@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import Papa from 'papaparse';
+import { Plus, Trash2, Edit2, Check, X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,6 +35,9 @@ export default function PrizesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState('');
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadPrizes = async () => {
     const data = await getPrizes(category);
@@ -53,6 +57,55 @@ export default function PrizesPage() {
     setName('');
     setQuantity('1');
     await loadPrizes();
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    Papa.parse<{ Name?: string; name?: string; Prize?: string; Quantity?: string; quantity?: string; qty?: string }>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        // Fallback for CSVs without headers
+        if (results.meta.fields && !results.meta.fields.some(f => ['Name', 'name', 'Prize'].includes(f))) {
+           Papa.parse<string[]>(file, {
+             header: false,
+             skipEmptyLines: true,
+             complete: async (res) => {
+               for (const row of res.data) {
+                 const pName = row[0];
+                 const pQty = parseInt(row[1] || '1');
+                 if (pName && !isNaN(pQty) && pQty > 0) {
+                   await addPrize(category, pName, pQty);
+                 }
+               }
+               await loadPrizes();
+               setIsUploading(false);
+             }
+           });
+           return;
+        }
+
+        for (const row of results.data) {
+          const pName = row.Name || row.name || row.Prize || Object.values(row)[0];
+          const pQtyStr = row.Quantity || row.quantity || row.qty || Object.values(row)[1];
+          const pQty = parseInt(pQtyStr as string);
+          
+          if (pName && !isNaN(pQty) && pQty > 0) {
+            await addPrize(category, pName as string, pQty);
+          }
+        }
+        await loadPrizes();
+        setIsUploading(false);
+      },
+      error: () => {
+        alert("Failed to parse CSV file");
+        setIsUploading(false);
+      }
+    });
+    e.target.value = '';
   };
 
   const confirmDelete = async () => {
@@ -85,6 +138,22 @@ export default function PrizesPage() {
     <div className="space-y-6 max-w-5xl">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Prizes</h1>
+        
+        <input 
+          type="file" 
+          accept=".csv" 
+          className="hidden" 
+          onChange={handleFileUpload}
+          disabled={isUploading}
+          ref={fileInputRef}
+        />
+        <Button 
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          {isUploading ? 'Uploading...' : 'Upload CSV'}
+        </Button>
       </div>
 
       <Tabs value={category} onValueChange={(v) => setCategory(v as Category)} className="w-full">
