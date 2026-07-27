@@ -18,6 +18,15 @@ import WinnerCard from '@/components/Drawing/WinnerCard';
 import CustomDropdown from '@/components/Drawing/CustomDropdown';
 import { Settings } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type DrawingState = 'READY' | 'DRAWING' | 'REVEALING' | 'WAITING_CONFIRMATION' | 'COMPLETED';
 
@@ -37,6 +46,7 @@ export default function DrawingPage() {
   const [drawingState, setDrawingState] = useState<DrawingState>('READY');
   const [activeSlots, setActiveSlots] = useState<ActiveSlot[]>([]);
   const [currentRevealIndex, setCurrentRevealIndex] = useState(-1);
+  const [errorDialogMessage, setErrorDialogMessage] = useState<string | null>(null);
 
   // Load prizes when category changes
   useEffect(() => {
@@ -60,7 +70,7 @@ export default function DrawingPage() {
     
     const participants = await getParticipants(category);
     if (participants.length < selectedPrize.quantity) {
-      alert(`Not enough participants! Need ${selectedPrize.quantity}, but only have ${participants.length}.`);
+      setErrorDialogMessage(`Not enough participants! Need ${selectedPrize.quantity}, but only have ${participants.length}.`);
       return;
     }
 
@@ -70,7 +80,7 @@ export default function DrawingPage() {
     const picked = shuffled.slice(0, safeQuantity);
 
     if (picked.length === 0) {
-      alert("Failed to pick participants. Please check your prize quantity.");
+      setErrorDialogMessage("Failed to pick participants. Please check your prize quantity.");
       return;
     }
 
@@ -201,7 +211,7 @@ export default function DrawingPage() {
     const available = participants.filter(p => !activeIds.includes(p.id));
 
     if (available.length === 0) {
-      alert("No more participants available to redraw!");
+      setErrorDialogMessage("No more participants available to redraw!");
       return;
     }
 
@@ -382,6 +392,25 @@ export default function DrawingPage() {
         )}
 
       </div>
+
+      {/* Error Notification Dialog */}
+      <Dialog open={!!errorDialogMessage} onOpenChange={(open) => !open && setErrorDialogMessage(null)}>
+        <DialogContent showCloseButton={false} className="sm:max-w-md bg-[#0a0a0a] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-500 text-xl font-bold flex items-center gap-2">
+              ⚠️ Notification
+            </DialogTitle>
+            <DialogDescription className="text-gray-300 text-base mt-2">
+              {errorDialogMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-end border-t border-white/10 mt-6 pt-4 bg-transparent">
+            <Button variant="outline" onClick={() => setErrorDialogMessage(null)} className="border-white/20 text-white hover:bg-white/10">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
