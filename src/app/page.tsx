@@ -362,16 +362,19 @@ export default function DrawingPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                className="relative w-full max-w-6xl mx-auto"
+                className="relative w-[95vw] max-w-7xl mx-auto"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-2xl blur-lg opacity-50"></div>
-                <div className="relative bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl flex flex-col items-center">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-3xl blur-xl opacity-50"></div>
+                <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 w-full">
                     {activeSlots.map((slot, index) => (
                       <div key={slot.id} className="flex flex-col items-center justify-center text-center">
                         {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
-                          <div className="w-full px-6 py-6 bg-white/5 border border-white/10 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center justify-center">
-                            <div className="text-2xl md:text-3xl lg:text-4xl tracking-tight text-white line-clamp-2">
+                          <div className="relative w-full py-4 px-2 flex items-center justify-center">
+                            {/* Subtle highlight behind the name */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-lg"></div>
+                            
+                            <div className="relative text-2xl md:text-3xl lg:text-4xl tracking-tight text-white leading-tight break-words">
                               <ShuffleNameAnimation 
                                 targetName={slot.participant.name}
                                 isRevealing={slot.isRevealing || slot.isRevealed}
