@@ -265,13 +265,6 @@ export default function DrawingPage() {
         animate={{ y: 0, opacity: 1 }}
         className="absolute top-12 left-0 right-0 flex flex-col items-center z-10"
       >
-        <h2 className="text-xl md:text-2xl font-medium tracking-widest text-muted-foreground uppercase mb-4">
-          Office Anniversary 22
-        </h2>
-        
-        <div className="px-6 py-2 border border-white/20 rounded-full bg-white/5 backdrop-blur-md text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-          {category === 'doorprize' ? 'Doorprize' : 'Grand Prize'}
-        </div>
 
         {selectedPrize && drawingState === 'READY' && (
           <div className="mt-8 text-center">
