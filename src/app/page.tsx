@@ -342,24 +342,62 @@ export default function DrawingPage() {
               <h3 className="text-2xl font-bold text-white/50">{selectedPrize?.name}</h3>
             </div>
 
-            <div className="flex flex-col space-y-6">
-              {activeSlots.map((slot, index) => (
-                <div key={slot.id} className="w-full">
-                  {/* Either it's currently revealing, already revealed, or it's scrambling */}
-                  {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
-                    <WinnerCard 
-                      participantName={slot.participant.name}
-                      isRevealing={slot.isRevealing || slot.isRevealed}
-                      onRevealComplete={() => handleRevealComplete(index)}
-                      winnerInfo={slot.winnerRecord}
-                      onConfirm={() => handleConfirm(index)}
-                      onRedraw={() => handleRedraw(index)}
-                      index={index}
-                    />
-                  )}
+            {category === 'doorprize' ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+                className="relative w-full max-w-6xl mx-auto"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-2xl blur-lg opacity-50"></div>
+                <div className="relative bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl flex flex-col items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 w-full">
+                    {activeSlots.map((slot, index) => (
+                      <div key={slot.id} className="flex flex-col items-center justify-center text-center">
+                        {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
+                          <>
+                            <div className="text-3xl md:text-4xl lg:text-5xl tracking-tight mb-4 text-white">
+                              <ShuffleNameAnimation 
+                                targetName={slot.participant.name}
+                                isRevealing={slot.isRevealing || slot.isRevealed}
+                                onRevealComplete={() => handleRevealComplete(index)}
+                              />
+                            </div>
+                            {slot.winnerRecord?.status === 'Confirmed' && (
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="px-3 py-1 bg-white text-black text-xs font-bold uppercase rounded-full tracking-wider"
+                              >
+                                Confirmed
+                              </motion.div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            ) : (
+              <div className="flex flex-col space-y-6">
+                {activeSlots.map((slot, index) => (
+                  <div key={slot.id} className="w-full">
+                    {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
+                      <WinnerCard 
+                        participantName={slot.participant.name}
+                        isRevealing={slot.isRevealing || slot.isRevealed}
+                        onRevealComplete={() => handleRevealComplete(index)}
+                        winnerInfo={slot.winnerRecord}
+                        onConfirm={() => handleConfirm(index)}
+                        onRedraw={() => handleRedraw(index)}
+                        index={index}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Next Drawing Button */}
             <AnimatePresence>
