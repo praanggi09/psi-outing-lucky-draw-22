@@ -186,36 +186,34 @@ export default function DrawingPage() {
 
   const handleConfirm = async (index: number) => {
     try {
-      // Use the functional form to get the latest state safely
+      const slot = activeSlots[index];
+      if (!slot.winnerRecord || !drawingPrize || slot.winnerRecord.status !== 'Pending') return;
+
+      const updatedRecord = { ...slot.winnerRecord, status: 'Confirmed' as const };
+      
+      let isAllConfirmed = false;
       setActiveSlots(prev => {
-        const slot = prev[index];
-        if (!slot.winnerRecord || !drawingPrize || slot.winnerRecord.status !== 'Pending') return prev;
-
-        // Fire and forget DB updates so the UI is snappy and we don't block state updates
-        Promise.all([
-          updateWinnerStatus(slot.winnerRecord.id, 'Confirmed'),
-          removeParticipant(category, slot.participant.id),
-          decreasePrizeQuantity(category, drawingPrize.id)
-        ]).catch(e => console.error("Error confirming winner:", e));
-
-        const updatedRecord = { ...slot.winnerRecord, status: 'Confirmed' as const };
         const newSlots = prev.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s);
-        
-        const allConfirmed = newSlots.every(s => s.winnerRecord?.status === 'Confirmed');
-        if (allConfirmed) {
-          setDrawingState('COMPLETED');
-          // Reload prizes to reflect quantity decrease
-          getPrizes(category).then(data => {
-            const available = data.filter(p => p.quantity > 0);
-            setPrizes(available);
-            if (!available.find(p => p.id === selectedPrizeId) && available.length > 0) {
-              setSelectedPrizeId(available[0].id);
-            }
-          });
-        }
-        
+        isAllConfirmed = newSlots.every(s => s.winnerRecord?.status === 'Confirmed');
         return newSlots;
       });
+
+      await Promise.all([
+        updateWinnerStatus(slot.winnerRecord.id, 'Confirmed'),
+        removeParticipant(category, slot.participant.id),
+        decreasePrizeQuantity(category, drawingPrize.id)
+      ]);
+
+      if (isAllConfirmed) {
+        setDrawingState('COMPLETED');
+        // Reload prizes to reflect quantity decrease
+        const data = await getPrizes(category);
+        const available = data.filter(p => p.quantity > 0);
+        setPrizes(available);
+        if (!available.find(p => p.id === selectedPrizeId) && available.length > 0) {
+          setSelectedPrizeId(available[0].id);
+        }
+      }
     } catch (e) {
       console.error(e);
       setErrorDialogMessage("An error occurred while confirming. Please try again.");
@@ -224,34 +222,20 @@ export default function DrawingPage() {
 
   const handleRedraw = async (index: number) => {
     try {
-      // Get latest state
-      setActiveSlots(prev => {
-        const slot = prev[index];
-        if (!slot.winnerRecord || !drawingPrize || slot.winnerRecord.status !== 'Pending') return prev;
-
-        // Async operations fire and forget
-        Promise.all([
-          updateWinnerStatus(slot.winnerRecord.id, 'Redrawn'),
-          removeParticipant(category, slot.participant.id)
-        ]).catch(e => console.error("Error redrawing:", e));
-
-        // Get new participant asynchronously outside the state setter... 
-        // Wait, we need to await getParticipants!
-        // We can't await inside setActiveSlots functional updater.
-        return prev;
-      });
-
-      // The correct way to handle async Redraw:
       const currentSlot = activeSlots[index];
       if (!currentSlot.winnerRecord || !drawingPrize || currentSlot.winnerRecord.status !== 'Pending') return;
 
       // Optimistically update status to prevent double clicks
       setActiveSlots(prev => prev.map((s, i) => i === index ? { ...s, winnerRecord: { ...s.winnerRecord!, status: 'Redrawn' } } : s));
 
-      await updateWinnerStatus(currentSlot.winnerRecord.id, 'Redrawn');
-      await removeParticipant(category, currentSlot.participant.id);
+      // Execute side effects outside of React's state setter
+      await Promise.all([
+        updateWinnerStatus(currentSlot.winnerRecord.id, 'Redrawn'),
+        removeParticipant(category, currentSlot.participant.id)
+      ]);
 
       const participants = await getParticipants(category);
+      // Ensure we don't pick someone who is currently active in ANY slot
       const activeIds = activeSlots.map(s => s.participant.id);
       const available = participants.filter(p => !activeIds.includes(p.id));
 
