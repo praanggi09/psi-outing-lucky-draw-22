@@ -190,9 +190,21 @@ export default function DrawingPage() {
     await decreasePrizeQuantity(category, selectedPrize.id);
 
     const updatedRecord = { ...slot.winnerRecord, status: 'Confirmed' as const };
-    setActiveSlots(prev => prev.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s));
+    const newSlots = activeSlots.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s);
+    setActiveSlots(newSlots);
 
-    checkGrandPrizeCompletion(index);
+    const allConfirmed = newSlots.every(s => s.winnerRecord?.status === 'Confirmed');
+    if (allConfirmed) {
+      setDrawingState('COMPLETED');
+      // Reload prizes
+      getPrizes(category).then(data => {
+         const available = data.filter(p => p.quantity > 0);
+         setPrizes(available);
+         if (!available.find(p => p.id === selectedPrizeId) && available.length > 0) {
+           setSelectedPrizeId(available[0].id);
+         }
+      });
+    }
   };
 
   const handleRedraw = async (index: number) => {
@@ -225,27 +237,6 @@ export default function DrawingPage() {
       isRevealed: false,
       winnerRecord: undefined // clear to create a new one
     } : s));
-  };
-
-  const checkGrandPrizeCompletion = (index: number) => {
-    // We check state slightly deferred to allow the state update to apply
-    setTimeout(() => {
-      setActiveSlots(currentSlots => {
-        const allConfirmed = currentSlots.every(s => s.winnerRecord?.status === 'Confirmed');
-        if (allConfirmed) {
-          setDrawingState('COMPLETED');
-          // Reload prizes
-          getPrizes(category).then(data => {
-             const available = data.filter(p => p.quantity > 0);
-             setPrizes(available);
-             if (!available.find(p => p.id === selectedPrizeId) && available.length > 0) {
-               setSelectedPrizeId(available[0].id);
-             }
-          });
-        }
-        return currentSlots;
-      });
-    }, 100);
   };
 
   const resetDrawing = () => {
