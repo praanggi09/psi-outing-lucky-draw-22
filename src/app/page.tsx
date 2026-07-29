@@ -181,7 +181,7 @@ export default function DrawingPage() {
           });
         }
       }
-    }, category === 'doorprize' ? 500 : 2500); // 0.5s pause for doorprize, 2.5s for grandprize
+    }, category === 'doorprize' ? 200 : 2500); // 0.2s pause for doorprize, 2.5s for grandprize
   };
 
   const handleConfirm = async (index: number) => {
