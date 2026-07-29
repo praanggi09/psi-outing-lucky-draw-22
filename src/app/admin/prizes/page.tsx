@@ -22,7 +22,8 @@ import {
   getPrizes, 
   addPrize, 
   removePrize,
-  updatePrize
+  updatePrize,
+  clearPrizes
 } from '@/lib/storage';
 
 export default function PrizesPage() {
@@ -35,6 +36,7 @@ export default function PrizesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState('');
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -112,6 +114,12 @@ export default function PrizesPage() {
     if (!itemToDelete) return;
     await removePrize(category, itemToDelete);
     setItemToDelete(null);
+    await loadPrizes();
+  };
+
+  const confirmClearAll = async () => {
+    await clearPrizes(category);
+    setShowClearConfirm(false);
     await loadPrizes();
   };
 
@@ -198,6 +206,18 @@ export default function PrizesPage() {
       </Card>
 
       <div className="rounded-md border bg-card">
+        <div className="p-4 border-b bg-muted/20 flex justify-between items-center">
+          <h2 className="font-medium">Total Types: {prizes.length}</h2>
+          {prizes.length > 0 && (
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={() => setShowClearConfirm(true)}
+            >
+              Clear All
+            </Button>
+          )}
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -295,6 +315,21 @@ export default function PrizesPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setItemToDelete(null)}>Cancel</Button>
             <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Clear All Prizes</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete ALL prizes in this category? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowClearConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmClearAll}>Clear All</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

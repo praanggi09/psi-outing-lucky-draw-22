@@ -19,7 +19,8 @@ import {
   Participant, 
   getParticipants, 
   addParticipants, 
-  removeParticipant 
+  removeParticipant,
+  clearParticipants
 } from '@/lib/storage';
 
 export default function ParticipantsPage() {
@@ -28,6 +29,7 @@ export default function ParticipantsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const loadParticipants = async () => {
     const data = await getParticipants(category);
@@ -88,6 +90,12 @@ export default function ParticipantsPage() {
     await loadParticipants();
   };
 
+  const confirmClearAll = async () => {
+    await clearParticipants(category);
+    setShowClearConfirm(false);
+    await loadParticipants();
+  };
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex justify-between items-center">
@@ -120,6 +128,15 @@ export default function ParticipantsPage() {
       <div className="rounded-md border">
         <div className="p-4 border-b bg-muted/20 flex justify-between items-center">
           <h2 className="font-medium">Total: {participants.length}</h2>
+          {participants.length > 0 && (
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={() => setShowClearConfirm(true)}
+            >
+              Clear All
+            </Button>
+          )}
         </div>
         <Table>
           <TableHeader>
@@ -170,6 +187,21 @@ export default function ParticipantsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setItemToDelete(null)}>Cancel</Button>
             <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Clear All Participants</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete ALL participants in this category? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowClearConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmClearAll}>Clear All</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

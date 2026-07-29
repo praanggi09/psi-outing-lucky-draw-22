@@ -52,6 +52,14 @@ export const removeParticipant = async (category: Category, id: string): Promise
   revalidatePath('/');
 };
 
+export const clearParticipants = async (category: Category): Promise<void> => {
+  await prisma.participant.deleteMany({
+    where: { category }
+  });
+  revalidatePath('/admin/participants');
+  revalidatePath('/');
+};
+
 // Prizes
 export const getPrizes = async (category: Category): Promise<Prize[]> => {
   const data = await prisma.prize.findMany({
@@ -90,6 +98,14 @@ export const decreasePrizeQuantity = async (category: Category, id: string): Pro
 export const removePrize = async (category: Category, id: string): Promise<void> => {
   await prisma.prize.delete({
     where: { id }
+  });
+  revalidatePath('/admin/prizes');
+  revalidatePath('/');
+};
+
+export const clearPrizes = async (category: Category): Promise<void> => {
+  await prisma.prize.deleteMany({
+    where: { category }
   });
   revalidatePath('/admin/prizes');
   revalidatePath('/');
