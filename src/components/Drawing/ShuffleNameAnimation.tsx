@@ -54,8 +54,8 @@ export default function ShuffleNameAnimation({
     const animateLock = () => {
       frame++;
       
-      // Every 15 frames, lock one more character (much slower for suspense)
-      if (frame % 15 === 0 && lockIndexRef.current < targetName.length) {
+      // Every 4 frames, lock one more character (much faster for large groups)
+      if (frame % 4 === 0 && lockIndexRef.current < targetName.length) {
         lockIndexRef.current += 1;
       }
 
