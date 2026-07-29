@@ -17,7 +17,7 @@ import {
 import WinnerCard from '@/components/Drawing/WinnerCard';
 import CustomDropdown from '@/components/Drawing/CustomDropdown';
 import ShuffleNameAnimation from '@/components/Drawing/ShuffleNameAnimation';
-import { Settings } from 'lucide-react';
+
 import Link from 'next/link';
 import {
   Dialog,
@@ -273,10 +273,6 @@ export default function DrawingPage() {
       {/* Dark overlay for contrast */}
       <div className={`absolute inset-0 z-0 pointer-events-none transition-colors duration-1000 ${drawingState === 'READY' ? 'bg-black/50' : 'bg-black/85'}`}></div>
 
-      {/* Admin Link (subtle) */}
-      <Link href="/admin" className="absolute top-6 right-6 opacity-20 hover:opacity-100 transition-opacity z-20">
-        <Settings size={24} />
-      </Link>
 
       {/* Header */}
       <motion.div 
