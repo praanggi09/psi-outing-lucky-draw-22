@@ -16,6 +16,7 @@ import {
 } from '@/lib/storage';
 import WinnerCard from '@/components/Drawing/WinnerCard';
 import CustomDropdown from '@/components/Drawing/CustomDropdown';
+import ShuffleNameAnimation from '@/components/Drawing/ShuffleNameAnimation';
 import { Settings } from 'lucide-react';
 import Link from 'next/link';
 import {
