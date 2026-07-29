@@ -97,11 +97,11 @@ export default function DrawingPage() {
     setActiveSlots(slots);
     setDrawingState('DRAWING');
     
-    // After 4 seconds of global scramble, start revealing one by one
+    // After a global scramble, start revealing one by one
     setTimeout(() => {
       setDrawingState('REVEALING');
       setCurrentRevealIndex(0);
-    }, 4000);
+    }, category === 'doorprize' ? 1500 : 3000);
   };
 
   // Handle sequential reveal
