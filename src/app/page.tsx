@@ -366,9 +366,9 @@ export default function DrawingPage() {
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-3xl blur-xl opacity-50"></div>
                 <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col items-center">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 w-full">
+                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-10 w-full">
                     {activeSlots.map((slot, index) => (
-                      <div key={slot.id} className="flex flex-col items-center justify-center text-center">
+                      <div key={slot.id} className="flex flex-col items-center justify-center text-center w-full sm:w-[45%] md:w-[30%]">
                         {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
                           <div className="relative w-full py-4 px-2 flex items-center justify-center">
                             {/* Subtle highlight behind the name */}
