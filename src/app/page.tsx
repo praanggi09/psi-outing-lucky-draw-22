@@ -290,7 +290,7 @@ export default function DrawingPage() {
       </motion.div>
 
       {/* Main Content Area */}
-      <div className="w-full max-w-7xl px-8 mt-32 z-10 flex flex-col items-center">
+      <div className="w-full max-w-[1600px] px-4 md:px-8 mt-32 z-10 flex flex-col items-center">
         
         {/* Controls (Only visible in READY state) */}
         <AnimatePresence mode="wait">
@@ -356,7 +356,7 @@ export default function DrawingPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                className="relative w-[98vw] max-w-[1600px] mx-auto"
+                className="relative w-full mx-auto"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-3xl blur-xl opacity-50"></div>
                 <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl p-4 md:p-8 shadow-2xl flex flex-col items-center">
