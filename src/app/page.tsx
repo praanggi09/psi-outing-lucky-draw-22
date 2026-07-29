@@ -191,12 +191,10 @@ export default function DrawingPage() {
 
       const updatedRecord = { ...slot.winnerRecord, status: 'Confirmed' as const };
       
-      let isAllConfirmed = false;
-      setActiveSlots(prev => {
-        const newSlots = prev.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s);
-        isAllConfirmed = newSlots.every(s => s.winnerRecord?.status === 'Confirmed');
-        return newSlots;
-      });
+      // Calculate if all will be confirmed after this action
+      const isAllConfirmed = activeSlots.every((s, i) => i === index || s.winnerRecord?.status === 'Confirmed');
+
+      setActiveSlots(prev => prev.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s));
 
       await Promise.all([
         updateWinnerStatus(slot.winnerRecord.id, 'Confirmed'),
