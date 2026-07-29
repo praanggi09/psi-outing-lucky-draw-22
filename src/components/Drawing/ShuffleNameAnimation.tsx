@@ -8,12 +8,14 @@ interface ShuffleNameAnimationProps {
   targetName: string;
   isRevealing: boolean;
   onRevealComplete?: () => void;
+  speed?: 'fast' | 'slow';
 }
 
 export default function ShuffleNameAnimation({ 
   targetName, 
   isRevealing, 
-  onRevealComplete 
+  onRevealComplete,
+  speed = 'fast'
 }: ShuffleNameAnimationProps) {
   const [displayText, setDisplayText] = useState('');
   const lockIndexRef = useRef(0);
@@ -54,8 +56,9 @@ export default function ShuffleNameAnimation({
     const animateLock = () => {
       frame++;
       
-      // Every 4 frames, lock one more character (much faster for large groups)
-      if (frame % 4 === 0 && lockIndexRef.current < targetName.length) {
+      // Adjust speed based on prop (4 frames for fast, 10 frames for slow)
+      const frameMod = speed === 'slow' ? 10 : 4;
+      if (frame % frameMod === 0 && lockIndexRef.current < targetName.length) {
         lockIndexRef.current += 1;
       }
 
