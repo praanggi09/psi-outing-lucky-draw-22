@@ -43,6 +43,7 @@ export default function DrawingPage() {
   const [category, setCategory] = useState<Category>('doorprize');
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [selectedPrizeId, setSelectedPrizeId] = useState<string>('');
+  const [drawingPrize, setDrawingPrize] = useState<Prize | null>(null);
   
   const [drawingState, setDrawingState] = useState<DrawingState>('READY');
   const [activeSlots, setActiveSlots] = useState<ActiveSlot[]>([]);
@@ -68,6 +69,7 @@ export default function DrawingPage() {
 
   const startDrawing = async () => {
     if (!selectedPrize) return;
+    setDrawingPrize(selectedPrize);
     
     const participants = await getParticipants(category);
     if (participants.length < selectedPrize.quantity) {
@@ -118,7 +120,7 @@ export default function DrawingPage() {
     if (drawingState !== 'REVEALING' && drawingState !== 'WAITING_CONFIRMATION') return;
 
     const slot = activeSlots[index];
-    if (!selectedPrize) return;
+    if (!drawingPrize) return;
 
     let updatedSlot = { ...slot, isRevealed: true, isRevealing: false };
 
@@ -128,13 +130,13 @@ export default function DrawingPage() {
       const winnerData = await addWinner({
         participantId: slot.participant.id,
         participantName: slot.participant.name,
-        prizeId: selectedPrize.id,
-        prizeName: selectedPrize.name,
+        prizeId: drawingPrize.id,
+        prizeName: drawingPrize.name,
         category: category,
         status: 'Confirmed'
       });
       await removeParticipant(category, slot.participant.id);
-      await decreasePrizeQuantity(category, selectedPrize.id);
+      await decreasePrizeQuantity(category, drawingPrize.id);
       
       updatedSlot.winnerRecord = winnerData;
     } else {
@@ -144,8 +146,8 @@ export default function DrawingPage() {
         const winnerData = await addWinner({
           participantId: slot.participant.id,
           participantName: slot.participant.name,
-          prizeId: selectedPrize.id,
-          prizeName: selectedPrize.name,
+          prizeId: drawingPrize.id,
+          prizeName: drawingPrize.name,
           category: category,
           status: 'Pending'
         });
@@ -184,11 +186,11 @@ export default function DrawingPage() {
 
   const handleConfirm = async (index: number) => {
     const slot = activeSlots[index];
-    if (!slot.winnerRecord || !selectedPrize) return;
+    if (!slot.winnerRecord || !drawingPrize) return;
 
     await updateWinnerStatus(slot.winnerRecord.id, 'Confirmed');
     await removeParticipant(category, slot.participant.id);
-    await decreasePrizeQuantity(category, selectedPrize.id);
+    await decreasePrizeQuantity(category, drawingPrize.id);
 
     const updatedRecord = { ...slot.winnerRecord, status: 'Confirmed' as const };
     const newSlots = activeSlots.map((s, i) => i === index ? { ...s, winnerRecord: updatedRecord } : s);
@@ -210,7 +212,7 @@ export default function DrawingPage() {
 
   const handleRedraw = async (index: number) => {
     const slot = activeSlots[index];
-    if (!slot.winnerRecord || !selectedPrize) return;
+    if (!slot.winnerRecord || !drawingPrize) return;
 
     // Mark previous as Redrawn
     await updateWinnerStatus(slot.winnerRecord.id, 'Redrawn');
@@ -252,7 +254,7 @@ export default function DrawingPage() {
       style={{ backgroundImage: "url('/bg.jpg')" }}
     >
       {/* Dark overlay for contrast */}
-      <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none"></div>
+      <div className={`absolute inset-0 z-0 pointer-events-none transition-colors duration-1000 ${drawingState === 'READY' ? 'bg-black/50' : 'bg-black/85'}`}></div>
 
       {/* Admin Link (subtle) */}
       <Link href="/admin" className="absolute top-6 right-6 opacity-20 hover:opacity-100 transition-opacity z-20">
@@ -333,7 +335,7 @@ export default function DrawingPage() {
             
             {/* Header when drawing */}
             <div className="text-center mb-12">
-              <h3 className="text-2xl font-bold text-white/50">{selectedPrize?.name}</h3>
+              <h3 className="text-2xl font-bold text-white/50">{drawingPrize?.name}</h3>
             </div>
 
             {category === 'doorprize' ? (
