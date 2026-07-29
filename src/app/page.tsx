@@ -366,19 +366,19 @@ export default function DrawingPage() {
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-2xl blur-lg opacity-50"></div>
                 <div className="relative bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl flex flex-col items-center">
-                  <div className="flex flex-wrap justify-center gap-x-16 gap-y-12 w-full">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     {activeSlots.map((slot, index) => (
                       <div key={slot.id} className="flex flex-col items-center justify-center text-center">
                         {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
-                          <>
-                            <div className="text-3xl md:text-4xl lg:text-5xl tracking-tight mb-4 text-white">
+                          <div className="w-full px-6 py-6 bg-white/5 border border-white/10 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center justify-center">
+                            <div className="text-2xl md:text-3xl lg:text-4xl tracking-tight text-white line-clamp-2">
                               <ShuffleNameAnimation 
                                 targetName={slot.participant.name}
                                 isRevealing={slot.isRevealing || slot.isRevealed}
                                 onRevealComplete={() => handleRevealComplete(index)}
                               />
                             </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     ))}
