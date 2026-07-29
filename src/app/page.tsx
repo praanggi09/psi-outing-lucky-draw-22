@@ -356,19 +356,19 @@ export default function DrawingPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                className="relative w-[95vw] max-w-7xl mx-auto"
+                className="relative w-[98vw] max-w-[1600px] mx-auto"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-3xl blur-xl opacity-50"></div>
-                <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col items-center">
-                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-10 w-full">
+                <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl p-4 md:p-8 shadow-2xl flex flex-col items-center">
+                  <div className="flex flex-wrap justify-center gap-x-6 gap-y-6 w-full">
                     {activeSlots.map((slot, index) => (
-                      <div key={slot.id} className="flex flex-col items-center justify-center text-center w-full sm:w-[45%] md:w-[30%]">
+                      <div key={slot.id} className="flex flex-col items-center justify-center text-center w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%]">
                         {(slot.isRevealing || slot.isRevealed || drawingState === 'DRAWING' || drawingState === 'REVEALING') && (
-                          <div className="relative w-full py-4 px-2 flex items-center justify-center">
+                          <div className="relative w-full py-3 px-2 flex items-center justify-center">
                             {/* Subtle highlight behind the name */}
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-lg"></div>
                             
-                            <div className="relative text-2xl md:text-3xl lg:text-4xl tracking-tight text-white leading-tight break-words">
+                            <div className="relative text-xl md:text-2xl lg:text-3xl tracking-tight text-white leading-tight break-words">
                               <ShuffleNameAnimation 
                                 targetName={slot.participant.name}
                                 isRevealing={slot.isRevealing || slot.isRevealed}
