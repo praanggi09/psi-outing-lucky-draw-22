@@ -335,7 +335,9 @@ export default function DrawingPage() {
             
             {/* Header when drawing */}
             <div className="text-center mb-12">
-              <h3 className="text-2xl font-bold text-white/50">{drawingPrize?.name}</h3>
+              <h3 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 tracking-tight drop-shadow-lg pb-2">
+                {drawingPrize?.name}
+              </h3>
             </div>
 
             {category === 'doorprize' ? (
@@ -359,15 +361,6 @@ export default function DrawingPage() {
                                 onRevealComplete={() => handleRevealComplete(index)}
                               />
                             </div>
-                            {slot.winnerRecord?.status === 'Confirmed' && (
-                              <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="px-3 py-1 bg-white text-black text-xs font-bold uppercase rounded-full tracking-wider"
-                              >
-                                Confirmed
-                              </motion.div>
-                            )}
                           </>
                         )}
                       </div>
