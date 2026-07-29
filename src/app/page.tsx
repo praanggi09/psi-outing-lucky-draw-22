@@ -167,8 +167,8 @@ export default function DrawingPage() {
       } else {
         // All revealed
         if (category === 'grandprize') {
-          // Check if any are still pending
-          setDrawingState('WAITING_CONFIRMATION');
+          // Only set to waiting if we haven't already completed or reset it
+          setDrawingState(prev => (prev === 'COMPLETED' || prev === 'READY') ? prev : 'WAITING_CONFIRMATION');
         } else {
           setDrawingState('COMPLETED');
           // Reload prizes to reflect quantity decrease
