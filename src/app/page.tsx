@@ -229,7 +229,7 @@ export default function DrawingPage() {
       // Execute side effects outside of React's state setter
       await Promise.all([
         updateWinnerStatus(currentSlot.winnerRecord.id, 'Redrawn'),
-        removeParticipant(category, currentSlot.participant.id)
+        removeParticipantByName(currentSlot.participant.name)
       ]);
 
       const participants = await getParticipants(category);
