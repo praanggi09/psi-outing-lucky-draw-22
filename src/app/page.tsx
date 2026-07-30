@@ -42,6 +42,7 @@ interface ActiveSlot {
 export default function DrawingPage() {
   const [category, setCategory] = useState<Category>('doorprize');
   const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [selectedPrizeId, setSelectedPrizeId] = useState<string>('');
   const [drawingPrize, setDrawingPrize] = useState<Prize | null>(null);
   
@@ -50,19 +51,24 @@ export default function DrawingPage() {
   const [currentRevealIndex, setCurrentRevealIndex] = useState(-1);
   const [errorDialogMessage, setErrorDialogMessage] = useState<string | null>(null);
 
+  const loadData = async () => {
+    const data = await getPrizes(category);
+    const available = data.filter(p => p.quantity > 0);
+    setPrizes(available);
+    if (available.length > 0 && !available.find(p => p.id === selectedPrizeId)) {
+      setSelectedPrizeId(available[0].id);
+    } else if (available.length === 0) {
+      setSelectedPrizeId('');
+    }
+    
+    const poolCategory = category === 'specialprize' ? 'grandprize' : category;
+    const parts = await getParticipants(poolCategory);
+    setParticipants(parts);
+  };
+
   // Load prizes when category changes
   useEffect(() => {
-    const load = async () => {
-      const data = await getPrizes(category);
-      const available = data.filter(p => p.quantity > 0);
-      setPrizes(available);
-      if (available.length > 0) {
-        setSelectedPrizeId(available[0].id);
-      } else {
-        setSelectedPrizeId('');
-      }
-    };
-    load();
+    loadData();
   }, [category]);
 
   const selectedPrize = prizes.find(p => p.id === selectedPrizeId);
@@ -71,8 +77,6 @@ export default function DrawingPage() {
     if (!selectedPrize) return;
     setDrawingPrize(selectedPrize);
     
-    const poolCategory = category === 'specialprize' ? 'grandprize' : category;
-    const participants = await getParticipants(poolCategory);
     if (participants.length < selectedPrize.quantity) {
       setErrorDialogMessage(`Not enough participants! Need ${selectedPrize.quantity}, but only have ${participants.length}.`);
       return;
@@ -232,9 +236,6 @@ export default function DrawingPage() {
         updateWinnerStatus(currentSlot.winnerRecord.id, 'Redrawn'),
         removeParticipantByName(currentSlot.participant.name)
       ]);
-
-      const poolCategory = category === 'specialprize' ? 'grandprize' : category;
-      const participants = await getParticipants(poolCategory);
       // Ensure we don't pick someone who is currently active in ANY slot
       const activeIds = activeSlots.map(s => s.participant.id);
       const available = participants.filter(p => !activeIds.includes(p.id));
@@ -263,6 +264,9 @@ export default function DrawingPage() {
     setDrawingState('READY');
     setActiveSlots([]);
     setCurrentRevealIndex(-1);
+    
+    // Refresh data in background for the next draw
+    loadData();
   };
 
   return (
