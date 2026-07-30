@@ -64,8 +64,8 @@ export default function WinnerCard({
           </motion.div>
         )}
 
-        {/* Action Buttons (Only for Pending Grand Prizes) */}
-        {winnerInfo?.status === 'Pending' && winnerInfo.category === 'grandprize' && (
+        {/* Action Buttons (Only for Pending Prizes) */}
+        {winnerInfo?.status === 'Pending' && winnerInfo.category !== 'doorprize' && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

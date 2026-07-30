@@ -167,7 +167,7 @@ export default function DrawingPage() {
         }
       } else {
         // All revealed
-        if (category === 'grandprize') {
+        if (category !== 'doorprize') {
           // Only set to waiting if we haven't already completed or reset it
           setDrawingState(prev => (prev === 'COMPLETED' || prev === 'READY') ? prev : 'WAITING_CONFIRMATION');
         } else {
