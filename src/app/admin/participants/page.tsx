@@ -121,7 +121,7 @@ export default function ParticipantsPage() {
       <Tabs value={category} onValueChange={(v) => setCategory(v as Category)} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="doorprize">Doorprize Pool</TabsTrigger>
-          <TabsTrigger value="grandprize">Grand Prize Pool</TabsTrigger>
+          <TabsTrigger value="grandprize">Grand Prize & Special Prize Pool</TabsTrigger>
         </TabsList>
       </Tabs>
 

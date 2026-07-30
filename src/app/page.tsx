@@ -71,7 +71,8 @@ export default function DrawingPage() {
     if (!selectedPrize) return;
     setDrawingPrize(selectedPrize);
     
-    const participants = await getParticipants(category);
+    const poolCategory = category === 'specialprize' ? 'grandprize' : category;
+    const participants = await getParticipants(poolCategory);
     if (participants.length < selectedPrize.quantity) {
       setErrorDialogMessage(`Not enough participants! Need ${selectedPrize.quantity}, but only have ${participants.length}.`);
       return;
@@ -232,7 +233,8 @@ export default function DrawingPage() {
         removeParticipantByName(currentSlot.participant.name)
       ]);
 
-      const participants = await getParticipants(category);
+      const poolCategory = category === 'specialprize' ? 'grandprize' : category;
+      const participants = await getParticipants(poolCategory);
       // Ensure we don't pick someone who is currently active in ANY slot
       const activeIds = activeSlots.map(s => s.participant.id);
       const available = participants.filter(p => !activeIds.includes(p.id));
@@ -307,6 +309,12 @@ export default function DrawingPage() {
                   className={`px-6 py-3 rounded-xl font-medium transition-all ${category === 'doorprize' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
                 >
                   Doorprize
+                </button>
+                <button
+                  onClick={() => setCategory('specialprize')}
+                  className={`px-6 py-3 rounded-xl font-medium transition-all ${category === 'specialprize' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
+                >
+                  Special Prize
                 </button>
                 <button
                   onClick={() => setCategory('grandprize')}

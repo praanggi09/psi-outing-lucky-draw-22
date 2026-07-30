@@ -3,7 +3,7 @@
 import { prisma } from './db';
 import { revalidatePath } from 'next/cache';
 
-export type Category = 'doorprize' | 'grandprize';
+export type Category = 'doorprize' | 'specialprize' | 'grandprize';
 
 export interface Participant {
   id: string;
