@@ -52,6 +52,14 @@ export const removeParticipant = async (category: Category, id: string): Promise
   revalidatePath('/');
 };
 
+export const removeParticipantByName = async (name: string): Promise<void> => {
+  await prisma.participant.deleteMany({
+    where: { name }
+  });
+  revalidatePath('/admin/participants');
+  revalidatePath('/');
+};
+
 export const clearParticipants = async (category: Category): Promise<void> => {
   await prisma.participant.deleteMany({
     where: { category }

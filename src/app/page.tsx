@@ -3,16 +3,16 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+  getParticipants, 
+  getPrizes, 
+  addWinner, 
+  updateWinnerStatus, 
+  removeParticipantByName, 
+  decreasePrizeQuantity, 
   Category, 
   Prize, 
   Participant, 
-  Winner,
-  getPrizes, 
-  getParticipants,
-  addWinner,
-  decreasePrizeQuantity,
-  removeParticipant,
-  updateWinnerStatus
+  Winner 
 } from '@/lib/storage';
 import WinnerCard from '@/components/Drawing/WinnerCard';
 import CustomDropdown from '@/components/Drawing/CustomDropdown';
@@ -135,7 +135,7 @@ export default function DrawingPage() {
         category: category,
         status: 'Confirmed'
       });
-      await removeParticipant(category, slot.participant.id);
+      await removeParticipantByName(slot.participant.name);
       await decreasePrizeQuantity(category, drawingPrize.id);
       
       updatedSlot.winnerRecord = winnerData;
@@ -198,7 +198,7 @@ export default function DrawingPage() {
 
       await Promise.all([
         updateWinnerStatus(slot.winnerRecord.id, 'Confirmed'),
-        removeParticipant(category, slot.participant.id),
+        removeParticipantByName(slot.participant.name),
         decreasePrizeQuantity(category, drawingPrize.id)
       ]);
 
