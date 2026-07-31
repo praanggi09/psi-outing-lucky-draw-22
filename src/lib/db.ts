@@ -9,6 +9,8 @@ let connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.DATAB
 if (connectionString) {
   // Strip sslmode=require because it interferes with pg-connection-string forcing ssl:true
   connectionString = connectionString.replace('?sslmode=require', '').replace('&sslmode=require', '');
+} else {
+  throw new Error("\n\n❌ KESALAHAN FATAL: URL Database tidak ditemukan! Pastikan file '.env' sudah ada di dalam folder proyek dan BUKAN bernama '.env.txt'.\n\n");
 }
 
 let prisma: PrismaClient;
