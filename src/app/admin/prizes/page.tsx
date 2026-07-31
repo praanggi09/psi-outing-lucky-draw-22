@@ -29,6 +29,7 @@ import {
 export default function PrizesPage() {
   const [category, setCategory] = useState<Category>('doorprize');
   const [prizes, setPrizesState] = useState<Prize[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('1');
@@ -42,8 +43,10 @@ export default function PrizesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadPrizes = async () => {
+    setIsLoading(true);
     const data = await getPrizes(category);
     setPrizesState(data);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -228,7 +231,16 @@ export default function PrizesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {prizes.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="h-24 text-center">
+                  <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                    <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                    Fetching data...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : prizes.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
                   No prizes added yet.

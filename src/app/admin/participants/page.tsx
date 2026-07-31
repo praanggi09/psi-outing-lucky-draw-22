@@ -27,13 +27,16 @@ export default function ParticipantsPage() {
   const [category, setCategory] = useState<Category>('doorprize');
   const [participants, setParticipantsState] = useState<Participant[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const loadParticipants = async () => {
+    setIsLoading(true);
     const data = await getParticipants(category);
     setParticipantsState(data);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -147,7 +150,16 @@ export default function ParticipantsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {participants.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="h-24 text-center">
+                  <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                    <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                    Fetching data...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : participants.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
                   No participants found. Upload a CSV to get started.
