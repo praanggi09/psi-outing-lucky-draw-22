@@ -11,8 +11,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 // We use the new NEON_DATABASE_URL environment variable exclusively for this branch
 let connectionString = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool);
+const adapter = new PrismaNeon({ connectionString });
 
 export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
 
