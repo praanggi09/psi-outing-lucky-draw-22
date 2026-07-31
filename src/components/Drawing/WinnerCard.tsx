@@ -44,7 +44,7 @@ export default function WinnerCard({
             targetName={participantName}
             isRevealing={isRevealing}
             onRevealComplete={onRevealComplete}
-            speed="slow"
+            speed="fast"
           />
         </div>
 

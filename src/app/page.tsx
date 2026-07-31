@@ -106,7 +106,7 @@ export default function DrawingPage() {
     setTimeout(() => {
       setDrawingState('REVEALING');
       setCurrentRevealIndex(0);
-    }, category === 'doorprize' ? 1500 : 3000);
+    }, category === 'doorprize' ? 1000 : 1500);
   };
 
   // Handle sequential reveal
@@ -188,7 +188,7 @@ export default function DrawingPage() {
           });
         }
       }
-    }, category === 'doorprize' ? 150 : 2500); // 0.15s pause for doorprize, 2.5s for grandprize
+    }, category === 'doorprize' ? 150 : 500); // 0.15s pause for doorprize, 0.5s for others
   };
 
   const handleConfirm = async (index: number) => {
@@ -234,10 +234,11 @@ export default function DrawingPage() {
       setActiveSlots(prev => prev.map((s, i) => i === index ? { ...s, winnerRecord: { ...s.winnerRecord!, status: 'Redrawn' } } : s));
 
       // Execute side effects outside of React's state setter
-      await Promise.all([
+      Promise.all([
         updateWinnerStatus(currentSlot.winnerRecord.id, 'Redrawn'),
         removeParticipantByName(currentSlot.participant.name)
-      ]);
+      ]).catch(console.error);
+      
       // Ensure we don't pick someone who is currently active in ANY slot
       const activeIds = activeSlots.map(s => s.participant.id);
       const available = participants.filter(p => !activeIds.includes(p.id));
