@@ -56,8 +56,8 @@ export default function ShuffleNameAnimation({
     const animateLock = () => {
       frame++;
       
-      // Adjust speed based on prop (4 frames for fast, 10 frames for slow)
-      const frameMod = speed === 'slow' ? 10 : 4;
+      // Adjust speed based on prop (2 frames for fast, 10 frames for slow)
+      const frameMod = speed === 'slow' ? 10 : 2;
       if (frame % frameMod === 0 && lockIndexRef.current < targetName.length) {
         lockIndexRef.current += 1;
       }
