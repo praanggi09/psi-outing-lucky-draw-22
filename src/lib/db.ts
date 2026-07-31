@@ -21,14 +21,29 @@ if (connectionString) {
   connectionString = connectionString.replace('?sslmode=require', '').replace('&sslmode=require', '');
 }
 
-const pool = new Pool({ 
-  connectionString,
-  ssl: connectionString?.includes('supabase') || connectionString?.includes('neon') || process.env.NODE_ENV === 'production' 
-    ? { rejectUnauthorized: false } 
-    : undefined
-});
+let prisma: PrismaClient;
 
-const adapter = new PrismaPg(pool);
-export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
+if (process.env.NODE_ENV === 'production') {
+  const pool = new Pool({ 
+    connectionString,
+    ssl: connectionString?.includes('supabase') || connectionString?.includes('neon') 
+      ? { rejectUnauthorized: false } 
+      : undefined
+  });
+  const adapter = new PrismaPg(pool);
+  prisma = new PrismaClient({ adapter });
+} else {
+  if (!globalForPrisma.prisma) {
+    const pool = new Pool({ 
+      connectionString,
+      ssl: connectionString?.includes('supabase') || connectionString?.includes('neon') 
+        ? { rejectUnauthorized: false } 
+        : undefined
+    });
+    const adapter = new PrismaPg(pool);
+    globalForPrisma.prisma = new PrismaClient({ adapter });
+  }
+  prisma = globalForPrisma.prisma;
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export { prisma };
