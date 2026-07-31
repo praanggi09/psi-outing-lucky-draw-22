@@ -18,12 +18,15 @@ import { getWinners, clearWinners, Winner } from '@/lib/storage';
 
 export default function WinnersPage() {
   const [winners, setWinners] = useState<Winner[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
 
   const loadWinners = async () => {
+    setIsLoading(true);
     const data = await getWinners();
     // Sort by timestamp descending
     setWinners(data.sort((a, b) => b.timestamp - a.timestamp));
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -102,7 +105,16 @@ export default function WinnersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {winners.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                    <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                    Fetching data...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : winners.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                   No winners recorded yet.
