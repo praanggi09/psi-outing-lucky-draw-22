@@ -54,16 +54,22 @@ export default function DrawingPage() {
 
   const loadData = async () => {
     setIsLoadingData(true);
-    const data = await getPrizes(category);
-    const available = data.filter(p => p.quantity > 0);
-    setPrizes(available);
-    // Reset selected prize when changing categories so it doesn't auto-select
-    setSelectedPrizeId('');
-    
-    const poolCategory = category === 'specialprize' ? 'grandprize' : category;
-    const parts = await getParticipants(poolCategory);
-    setParticipants(parts);
-    setIsLoadingData(false);
+    try {
+      const data = await getPrizes(category);
+      const available = data.filter(p => p.quantity > 0);
+      setPrizes(available);
+      // Reset selected prize when changing categories so it doesn't auto-select
+      setSelectedPrizeId('');
+      
+      const poolCategory = category === 'specialprize' ? 'grandprize' : category;
+      const parts = await getParticipants(poolCategory);
+      setParticipants(parts);
+    } catch (err: any) {
+      console.error("Failed to fetch data:", err);
+      setErrorDialogMessage("Gagal mengambil data dari database. Pastikan koneksi internet stabil dan port 5432 tidak diblokir.");
+    } finally {
+      setIsLoadingData(false);
+    }
   };
 
   // Load prizes when category changes
