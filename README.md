@@ -102,8 +102,9 @@ The application will be running at [http://localhost:3000](http://localhost:3000
 Untuk mempermudah panitia (operator) menjalankan aplikasi ini di laptop baru (baik Mac maupun Windows) secara offline/lokal pada Hari H, silakan ikuti panduan berikut:
 
 ### Persiapan Awal
-1. Download/Clone repository ini ke laptop operator.
-2. Minta file `.env` dari developer (yang berisi koneksi ke database Supabase) dan letakkan di dalam folder `lucky-draw` ini.
+1. **Pindahkan Source Code**: Download/Clone repository ini ke laptop operator (pastikan semua *file* lengkap).
+2. **Koneksi Database**: Minta file `.env` dari developer (yang berisi *link* koneksi ke database **Supabase**) dan letakkan di dalam folder root `lucky-draw` ini. Tanpa file ini, aplikasi tidak bisa terhubung ke database.
+3. **Versi Infrastruktur**: Aplikasi ini diwajibkan menggunakan **Node.js versi 20.x** dan **NPM versi 10.x**. *Script* instalasi otomatis di bawah ini sudah dikonfigurasi secara spesifik untuk mengunduh dan memasang versi tersebut agar tidak terjadi *error*.
 
 ### Untuk Laptop Windows
 Buka folder `scripts/win` dan klik dua kali (jalankan) file-file berikut secara berurutan:
