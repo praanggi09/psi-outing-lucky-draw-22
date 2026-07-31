@@ -131,19 +131,21 @@ export default function DrawingPage() {
 
     // Process logic based on category
     if (category === 'doorprize') {
-      // Auto confirm for doorprize
-      const winnerData = await addWinner({
-        participantId: slot.participant.id,
-        participantName: slot.participant.name,
-        prizeId: drawingPrize.id,
-        prizeName: drawingPrize.name,
-        category: category,
-        status: 'Confirmed'
-      });
-      await removeParticipantByName(slot.participant.name);
-      await decreasePrizeQuantity(category, drawingPrize.id);
+      // Auto confirm for doorprize - run in background to NOT block the fast animation
+      Promise.all([
+        addWinner({
+          participantId: slot.participant.id,
+          participantName: slot.participant.name,
+          prizeId: drawingPrize.id,
+          prizeName: drawingPrize.name,
+          category: category,
+          status: 'Confirmed'
+        }),
+        removeParticipantByName(slot.participant.name),
+        decreasePrizeQuantity(category, drawingPrize.id)
+      ]).catch(console.error);
       
-      updatedSlot.winnerRecord = winnerData;
+      // No need to await winnerRecord for Doorprize since it doesn't use the Confirm button
     } else {
       // Grand prize needs confirmation
       // Only create pending record if it doesn't exist (e.g. not a redraw)
