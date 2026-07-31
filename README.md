@@ -96,3 +96,25 @@ If you are not deploying to Vercel and want to run the optimized production buil
    ```
 
 The application will be running at [http://localhost:3000](http://localhost:3000) in production mode.
+
+## Operator / D-Day Installation Guide
+
+Untuk mempermudah panitia (operator) menjalankan aplikasi ini di laptop baru (baik Mac maupun Windows) secara offline/lokal pada Hari H, silakan ikuti panduan berikut:
+
+### Persiapan Awal
+1. Download/Clone repository ini ke laptop operator.
+2. Minta file `.env` dari developer (yang berisi koneksi ke database Supabase) dan letakkan di dalam folder `lucky-draw` ini.
+
+### Untuk Laptop Windows
+Buka folder `scripts/win` dan klik dua kali (jalankan) file-file berikut secara berurutan:
+1. **`1_install_infra.bat`**: Menginstall Node.js secara otomatis. *(Penting: Setelah selesai, tutup jendela CMD, lalu buka CMD baru sebelum lanjut ke nomor 2)*.
+2. **`2_run_prod.bat`**: Akan mengunduh paket, membangun aplikasi, dan menyalakannya di latar belakang. Jika sudah muncul tulisan BERHASIL, Anda bisa menutup jendela terminal hitam tersebut. Aplikasi bisa diakses di `http://localhost:3000`.
+3. **`3_stop_prod.bat`**: Gunakan script ini jika acara sudah selesai untuk mematikan aplikasi.
+4. **`4_uninstall_infra.bat`**: Menghapus seluruh instalasi aplikasi dan Node.js agar laptop operator bersih kembali.
+
+### Untuk Laptop Mac / Linux
+Buka Terminal, masuk ke folder `lucky-draw/scripts/mac`, lalu jalankan secara berurutan:
+1. `./1_install_infra.sh`
+2. `./2_run_prod.sh` (Aplikasi akan berjalan di background, akses di `http://localhost:3000`)
+3. `./3_stop_prod.sh` (Untuk mematikan saat acara selesai)
+4. `./4_uninstall_infra.sh` (Untuk membersihkan instalasi)
