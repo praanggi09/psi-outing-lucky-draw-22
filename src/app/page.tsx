@@ -45,6 +45,7 @@ export default function DrawingPage() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [selectedPrizeId, setSelectedPrizeId] = useState<string>('');
   const [drawingPrize, setDrawingPrize] = useState<Prize | null>(null);
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   
   const [drawingState, setDrawingState] = useState<DrawingState>('READY');
   const [activeSlots, setActiveSlots] = useState<ActiveSlot[]>([]);
@@ -52,18 +53,17 @@ export default function DrawingPage() {
   const [errorDialogMessage, setErrorDialogMessage] = useState<string | null>(null);
 
   const loadData = async () => {
+    setIsLoadingData(true);
     const data = await getPrizes(category);
     const available = data.filter(p => p.quantity > 0);
     setPrizes(available);
-    if (available.length > 0 && !available.find(p => p.id === selectedPrizeId)) {
-      setSelectedPrizeId(available[0].id);
-    } else if (available.length === 0) {
-      setSelectedPrizeId('');
-    }
+    // Reset selected prize when changing categories so it doesn't auto-select
+    setSelectedPrizeId('');
     
     const poolCategory = category === 'specialprize' ? 'grandprize' : category;
     const parts = await getParticipants(poolCategory);
     setParticipants(parts);
+    setIsLoadingData(false);
   };
 
   // Load prizes when category changes
@@ -286,6 +286,29 @@ export default function DrawingPage() {
         animate={{ y: 0, opacity: 1 }}
         className="absolute top-12 left-0 right-0 flex flex-col items-center z-10"
       >
+        {/* Category Tabs */}
+        {drawingState === 'READY' && (
+          <div className="flex gap-4 p-2 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 mb-8">
+            <button 
+              onClick={() => setCategory('doorprize')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all ${category === 'doorprize' ? 'bg-white text-black shadow-lg scale-105' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              Doorprize
+            </button>
+            <button 
+              onClick={() => setCategory('specialprize')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all ${category === 'specialprize' ? 'bg-white text-black shadow-lg scale-105' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              Special Prize
+            </button>
+            <button 
+              onClick={() => setCategory('grandprize')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all ${category === 'grandprize' ? 'bg-white text-black shadow-lg scale-105' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              Grand Prize
+            </button>
+          </div>
+        )}
 
         {selectedPrize && drawingState === 'READY' && (
           <div className="mt-8 text-center">
@@ -298,39 +321,23 @@ export default function DrawingPage() {
       </motion.div>
 
       {/* Main Content Area */}
-      <div className="w-full max-w-[1600px] px-4 md:px-8 mt-32 z-10 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center mt-32">
         
-        {/* Controls (Only visible in READY state) */}
         <AnimatePresence mode="wait">
           {drawingState === 'READY' && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, y: 50 }}
+              key="ready-state"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               className="flex flex-col items-center space-y-12"
             >
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setCategory('doorprize')}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all ${category === 'doorprize' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
-                >
-                  Doorprize
-                </button>
-                <button
-                  onClick={() => setCategory('specialprize')}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all ${category === 'specialprize' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
-                >
-                  Special Prize
-                </button>
-                <button
-                  onClick={() => setCategory('grandprize')}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all ${category === 'grandprize' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
-                >
-                  Grand Prize
-                </button>
-              </div>
-
-              {prizes.length > 0 ? (
+              {isLoadingData ? (
+                <div className="flex flex-col items-center justify-center mt-12 gap-4">
+                  <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin"></div>
+                  <p className="text-white/70 font-medium">Fetching prizes...</p>
+                </div>
+              ) : prizes.length > 0 ? (
                 <div className="flex flex-col items-center space-y-8">
                   <CustomDropdown 
                     prizes={prizes}
@@ -340,7 +347,8 @@ export default function DrawingPage() {
 
                   <button 
                     onClick={startDrawing}
-                    className="mt-12 px-12 py-5 text-xl font-black tracking-widest uppercase bg-white text-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)]"
+                    disabled={!selectedPrizeId}
+                    className="mt-12 px-12 py-5 text-xl font-black tracking-widest uppercase bg-white text-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Start Drawing
                   </button>
