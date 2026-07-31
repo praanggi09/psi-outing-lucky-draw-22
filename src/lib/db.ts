@@ -4,14 +4,19 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_DATABASE } = process.env;
-
 let connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
 
-// If we detect Vercel Supabase vars, construct a direct connection to bypass pgbouncer ssl issues
-if (POSTGRES_USER && POSTGRES_PASSWORD && POSTGRES_HOST && POSTGRES_DATABASE) {
-  connectionString = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DATABASE}`;
-} else if (connectionString) {
+// Locally (macOS), Node prefers IPv6 which is broken on Supabase pooler, so we convert to the direct URL.
+// On Vercel (production), IPv6 is blocked so the direct URL hangs, so we MUST use the pooler URL!
+if (process.env.NODE_ENV !== 'production' && connectionString && connectionString.includes('pooler.supabase.com')) {
+  const match = connectionString.match(/postgres:\/\/([^.]+)\.([^:]+):([^@]+)@[^\/]+\/([^?]+)/);
+  if (match) {
+    const [, user, projectRef, password, db] = match;
+    connectionString = `postgres://${user}:${password}@db.${projectRef}.supabase.co:5432/${db}`;
+  }
+}
+
+if (connectionString) {
   // Strip sslmode=require because it interferes with pg-connection-string forcing ssl:true
   connectionString = connectionString.replace('?sslmode=require', '').replace('&sslmode=require', '');
 }
