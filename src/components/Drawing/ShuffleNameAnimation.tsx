@@ -56,10 +56,17 @@ export default function ShuffleNameAnimation({
     const animateLock = () => {
       frame++;
       
-      // Adjust speed based on prop (2 frames for fast, 10 frames for slow)
-      const frameMod = speed === 'slow' ? 10 : 2;
-      if (frame % frameMod === 0 && lockIndexRef.current < targetName.length) {
-        lockIndexRef.current += 1;
+      // Adjust speed based on prop
+      if (speed === 'slow') {
+        if (frame % 10 === 0 && lockIndexRef.current < targetName.length) {
+          lockIndexRef.current += 1;
+        }
+      } else {
+        // For fast speed (doorprize), reveal 2 characters EVERY frame! Extremely fast.
+        lockIndexRef.current += 2;
+        if (lockIndexRef.current > targetName.length) {
+          lockIndexRef.current = targetName.length;
+        }
       }
 
       const lockedPart = targetName.substring(0, lockIndexRef.current);
