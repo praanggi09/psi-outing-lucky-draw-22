@@ -8,7 +8,7 @@ let connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.DATAB
 
 // Locally (macOS), Node prefers IPv6 which is broken on Supabase pooler, so we convert to the direct URL.
 // On Vercel (production), IPv6 is blocked so the direct URL hangs, so we MUST use the pooler URL!
-if (process.env.NODE_ENV !== 'production' && connectionString && connectionString.includes('pooler.supabase.com')) {
+if (!process.env.VERCEL && connectionString && connectionString.includes('pooler.supabase.com')) {
   const match = connectionString.match(/postgres:\/\/([^.]+)\.([^:]+):([^@]+)@[^\/]+\/([^?]+)/);
   if (match) {
     const [, user, projectRef, password, db] = match;
